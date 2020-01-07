@@ -157,6 +157,44 @@ const actors = [{
   }]
 }];
 
-console.log(cars);
-console.log(rentals);
-console.log(actors);
+
+//  Step 1 : Euro-Kilometers
+function NbOfDays(date1,date2){
+  var days = date2.getTime()- date1.getTime();
+  return days/(1000*60*60*24)+1;
+}
+
+function Rentalprice(rentals,cars){ 
+  let time ;
+  let distance;
+  let price = [];
+
+  rentals.forEach(r => {
+    const date1 = new Date(r.pickupDate);
+    const date2 = new Date(r.returnDate);
+    const total_days = NbOfDays(date1,date2);
+    const kilometers = r.distance != null ? r.distance : 0;
+
+    cars.forEach(c => {
+
+      if(r.carId == c.id) {
+
+        time = total_days * c.pricePerDay ;
+
+        distance = kilometers*c.pricePerKm;
+        
+        price.push(time+distance)
+        
+      }
+
+    })
+
+       
+  });
+  return  price;
+}
+//console.log(cars);
+//console.log(rentals);
+//console.log(actors);
+const res = Rentalprice(rentals,cars);
+console.log("rental prices step 1 : "+ res);
