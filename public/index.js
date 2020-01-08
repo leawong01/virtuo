@@ -164,22 +164,24 @@ function NbOfDays(date1,date2){
   return days/(1000*60*60*24)+1;
 }
 
-function Rentalprice(rentals,cars){ 
-  let time ;
+function Rentalprice1(rentals,cars){ 
+  let time;
   let distance;
   let price = [];
+  let total_days = [];
 
   rentals.forEach(r => {
     const date1 = new Date(r.pickupDate);
     const date2 = new Date(r.returnDate);
-    const total_days = NbOfDays(date1,date2);
+    const days = NbOfDays(date1,date2)
+    total_days.push(days);
     const kilometers = r.distance != null ? r.distance : 0;
 
     cars.forEach(c => {
 
       if(r.carId == c.id) {
 
-        time = total_days * c.pricePerDay ;
+        time = days * c.pricePerDay ;
 
         distance = kilometers*c.pricePerKm;
         
@@ -187,14 +189,50 @@ function Rentalprice(rentals,cars){
         
       }
 
-    })
+    });
 
        
   });
-  return  price;
+  return  {price,total_days};
 }
+
+
+// Step 2 : Drive More, Pay Less
+
+function DecreasePrice(total_days, reg_price)
+{
+    let new_price = [] ;
+    for (var i = 0; i<total_days.length; i++){
+      if(total_days[i] > 10){
+        new_price.push(reg_price[i]/2);
+      }
+      else if(total_days[i] > 4){
+        new_price.push(reg_price[i]*0.7);
+      }
+      else if (total_days[i] > 1){
+        new_price.push(reg_price[i]*0.9);
+      }
+      else {
+        new_price.push(reg_price[i]);
+      }
+    }
+
+    return new_price; 
+}
+
+function Rentalprice2(rentals, cars){
+    const reg_price=Rentalprice1(rentals,cars)
+    
+    const price = DecreasePrice(reg_price.total_days,reg_price.price)
+    return price;
+}
+
+
+
 //console.log(cars);
 //console.log(rentals);
 //console.log(actors);
-const res = Rentalprice(rentals,cars);
-console.log("rental prices step 1 : "+ res);
+const step1 = Rentalprice1(rentals,cars);
+console.log("rental prices step 1 : "+ step1.price);
+const step2 = Rentalprice2(rentals,cars);
+console.log("rental prices step 2 : " + step2);
