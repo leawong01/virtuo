@@ -254,7 +254,46 @@ function Commision(total_days,rentals){
     rentals[i].commission.treasury=total_days[i];
     rentals[i].commission.virtuo=commission[i]-rentals[i].commission.insurance-rentals[i].commission.treasury;
   }
-  return rentals;
+  return commission;
+}
+
+
+// Step 4: The Famous Deductible 
+
+function Rentalprice4(rentals,total_days){
+  let price=[];
+  for(var i =0;i<rentals.length;i++){
+    rentals[i].price = rentals[i].options.deductibleReduction==true ? rentals[i].price+4*total_days[i]:rentals[i].price;
+    price.push(rentals[i].price);
+  }
+  return price;
+}
+
+
+// Step 5: Pay the actors
+
+function ActorsPayment(actors,rentals,commission,price_no_ded){
+  for(var i=0;i<actors.length;i++){
+    actors[i].payment.forEach(p =>{
+      if(p.who == 'driver'){
+      p.amount=rentals[i].price;
+      }
+      else if(p.who=='partner'){
+        p.amount=rentals[i].price-commission[i];
+      }
+      else if(p.who=='insurance'){
+        p.amount=rentals[i].commission.insurance;
+      }
+      else if(p.who=='treasury'){
+        p.amount= rentals[i].commission.treasury;
+      }
+      else{
+        p.amount = rentals[i].commission.virtuo+(rentals[i].price-price_no_ded[i]);
+      }
+    });   
+  }
+  return actors;
+
 }
 
 
@@ -275,12 +314,30 @@ for(var i=0;i<step2.length;i++){
   console.log(step2[i]+"\n");
 }
 const tot_days=GetTotalDays(rentals);
+
 const step3 = Commision(tot_days,rentals);
 console.log("\ncommission step 3: ");
 for(var i=0;i<step3.length;i++){
   console.log("id: "+ rentals[i].id);
-  console.log(step3[i].commission);
+  console.log("commission: "+step3[i]);
+  console.log(rentals[i].commission);
   console.log("\n");
 }
+
+const step4 = Rentalprice4(rentals,tot_days);
+console.log("\n rental prices step 4: ");
+for(var i=0;i<step4.length;i++){
+  console.log("id: "+rentals[i].id);
+  console.log(rentals[i].options);
+  console.log(step4[i]+"\n");
+}
+
+const step5 = ActorsPayment(actors,rentals,step3,step2);
+console.log("\n amount for each actor step 5: ")
+for(var i=0;i<step5.length;i++){
+  console.log("id: "+rentals[i].id);
+  console.log(step5[i].payment);
+}
+
 
 
