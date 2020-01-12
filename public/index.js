@@ -158,7 +158,7 @@ const actors = [{
 }];
 
 
-//  Step 1 : Euro-Kilometers
+//  Step 1: Euro-Kilometers
 function NbOfDays(date1,date2){
   var days = date2.getTime()- date1.getTime();
   return days/(1000*60*60*24)+1;
@@ -197,7 +197,7 @@ function Rentalprice1(rentals,cars){
 }
 
 
-// Step 2 : Drive More, Pay Less
+// Step 2: Drive More, Pay Less
 
 function DecreasePrice(total_days, reg_price)
 {
@@ -224,7 +224,37 @@ function Rentalprice2(rentals, cars){
     const reg_price=Rentalprice1(rentals,cars)
     
     const price = DecreasePrice(reg_price.total_days,reg_price.price)
+
+    for (var i=0;i<rentals.length;i++){
+      rentals[i].price=price[i];
+    }
+
     return price;
+}
+
+
+// Step 3: Give Me All Your Money
+
+function GetTotalDays(rentals){
+  let total_days = [];
+  rentals.forEach(r => {
+    const date1 = new Date(r.pickupDate);
+    const date2 = new Date(r.returnDate);
+    const days = NbOfDays(date1,date2)
+    total_days.push(days);
+  });
+  return total_days;
+}
+
+function Commision(total_days,rentals){
+  let commission=[];
+  for(var i=0;i<rentals.length;i++){
+    commission[i] = rentals[i].price*0.7;
+    rentals[i].commission.insurance=commission[i]/2;
+    rentals[i].commission.treasury=total_days[i];
+    rentals[i].commission.virtuo=commission[i]-rentals[i].commission.insurance-rentals[i].commission.treasury;
+  }
+  return rentals;
 }
 
 
@@ -233,6 +263,24 @@ function Rentalprice2(rentals, cars){
 //console.log(rentals);
 //console.log(actors);
 const step1 = Rentalprice1(rentals,cars);
-console.log("rental prices step 1 : "+ step1.price);
+console.log("rental prices step 1: ");
+for(var i=0;i<step1.price.length;i++){
+  console.log("id: "+rentals[i].id);
+  console.log(step1.price[i]+"\n");
+}
 const step2 = Rentalprice2(rentals,cars);
-console.log("rental prices step 2 : " + step2);
+console.log("\n rental prices step 2: ");
+for(var i=0;i<step2.length;i++){
+  console.log("id: "+rentals[i].id);
+  console.log(step2[i]+"\n");
+}
+const tot_days=GetTotalDays(rentals);
+const step3 = Commision(tot_days,rentals);
+console.log("\ncommission step 3: ");
+for(var i=0;i<step3.length;i++){
+  console.log("id: "+ rentals[i].id);
+  console.log(step3[i].commission);
+  console.log("\n");
+}
+
+
