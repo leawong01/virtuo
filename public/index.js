@@ -250,7 +250,7 @@ function GetTotalDays(rentals){
 function Commision(total_days,rentals){
   let commission=[];
   for(var i=0;i<rentals.length;i++){
-    commission[i] = rentals[i].price*0.7;
+    commission[i] = rentals[i].price*0.3;
     rentals[i].commission.insurance=commission[i]/2;
     rentals[i].commission.treasury=total_days[i];
     rentals[i].commission.virtuo=commission[i]-rentals[i].commission.insurance-rentals[i].commission.treasury;
